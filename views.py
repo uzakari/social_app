@@ -144,6 +144,7 @@ def edit_profile_admin(id):
     form.about_me.data = user.about_me
     return render_template('editProfile.html', form=form, user=user)
 
+
 @app.route('/post/<int:id>', methods=['GET','POST'])
 def post(id):
     post = Post.query.get_or_404(id)
@@ -158,7 +159,7 @@ def post(id):
         page = (post.comments.count()-1)/current_app.config['FLASKY_COMMENTS_PER_PAGE'] + 1
     pagination = post.comments.order_by(Comment.timestamp.asc()).paginate(page,per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'],error_out=False)
     comments = pagination.items
-    return  render_template('post2.html', posts=[post], form=form, comments=comments,pagination=pagination)
+    return render_template('post2.html', posts=[post], form=form, comments=comments,pagination=pagination)
 
 
 #edit the existing post or update it
@@ -177,6 +178,7 @@ def edit(id):
     form.body.data = post.body
     return render_template('edit_post.html', form=form)
 
+
 @app.route('/follow/<username>')
 @login_required
 @permission_required(Permission.FOLLOW)
@@ -192,6 +194,7 @@ def follow(username):
     flash('You are now following %s. '% username)
     return redirect(url_for('user',username=username))
 
+
 @app.route('/unfollow/<username>')
 @login_required
 @permission_required(Permission.FOLLOW)
@@ -206,6 +209,7 @@ def unfollow(username):
     current_user.unfollow(user)
     flash('You are not following this %s anymore '% username)
     return redirect(url_for('user', username=username))
+
 
 @app.route('/followers/<username>')
 def followers(username):
