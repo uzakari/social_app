@@ -1,0 +1,7 @@
+{% include 'index.html' %}
+<div class="container">
+    <h1>You have not confirmed your account yet.</h1>
+    <p>Before you can access this site you need to confirm your account. Check your inbox,
+        you should have recieved an email with a confirmaton link</p>
+    <p>Need another confirmation email?<a href="{{ url_for('resend_confirmation') }}">click here</a></p>
+</div>

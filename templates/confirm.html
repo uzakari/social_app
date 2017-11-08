@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %} email {% endblock %}
+{% block body %}
+<div class="container">
+Dear {{ user.username }},
+<h1>Welcome to flasky</h1>
+<p class="">To confirm your account Please follow the link bellow
+{{url_for('confirm', token=token, _external=True)}}
+
+The Flasky Team
+
+Note: replies to this email address are not monitored
+</p>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% import '_macros.html' as macros %}
+{% block title %} login {% endblock %}
+{% block page_content %}
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}">
+<div class="page-header">
+  <h1> Hello,
+    {% if current_user.is_authenticated %}
+    {{ current_user.username }}
+    {% else %}
+     Stranger
+    {% endif %}
+  </h1>
+</div>
+<div>
+    {% if current_user.can(Permission.WRITE_ARTICLES) %}
+        {{ wtf.quick_form(form) }}
+    {% endif %}
+</div>
+        <div class="post-tabs">
+        <ul class="nav nav-tabs">
+            <li{% if not show_followed %} class="active"{% endif %}><a href="{{ url_for('show_all') }}">All Post</a></li>
+            {% if current_user.is_authenticated %}
+            <li {% if show_followed %} class="active"{% endif %}><a href="{{ url_for('show_followed') }}">Followers Post</a></li>
+            {% endif %}
+        </ul>
+            {% include 'post.html' %}
+        </div>
+        <div class="pagination">
+            {{ macros.pagination_widget(pagination, 'home') }}
+        </div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{{ pagedown.include_pagedown() }}
+{{ moment.include_moment() }}
+{% endblock %}
+
