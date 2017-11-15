@@ -43,7 +43,7 @@ def home():
         posts = pagination.items
         return render_template('index.html', form=form, posts=posts, show_followed=show_followed, pagination=pagination)
 
-#a route to registeration 
+#a route to registeration
 @app.route('/register/', methods=['GET', 'POST'])
 def register():
 
