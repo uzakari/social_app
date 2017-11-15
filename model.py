@@ -123,7 +123,7 @@ class User(UserMixin, db.Model):
     def password(self, password):
         self.password_hash = generate_password_hash(password)
 
-    def verify_password(self,password):
+    def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
     
     def __init__(self, **kwargs):
@@ -357,11 +357,11 @@ def create_app(config_name):
 
 
 #admin things
-admin.add_view(ModelView(User,db.session))
+admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Post, db.session))
 admin.add_view(ModelView(Role, db.session))
-admin.add_view(ModelView(follow,db.session))
-admin.add_view(ModelView(Comment,db.session))
+admin.add_view(ModelView(follow, db.session))
+admin.add_view(ModelView(Comment, db.session))
 
 
 if __name__ == '__main__':
