@@ -2,7 +2,7 @@ from flask import render_template, redirect, request, url_for, flash, session, a
 from flask_login import login_user
 from decorators import admin_required, permission_required
 from model import User, db, send_email, Role, Post, Comment
-from forms import LoginForm, RegistrationForm, EditProfileForm, EditProfileAdminForm, PostForm,CommentForm
+from forms import LoginForm, RegistrationForm, EditProfileForm, EditProfileAdminForm, PostForm, CommentForm
 from model import app, Permission
 from flask_login import logout_user, login_required, current_user
 
@@ -33,13 +33,13 @@ def home():
         page = request.args.get('page', 1, type=int)
         show_followed = False
         if current_user.is_authenticated:
-            show_followed = bool(request.cookies.get('show_followed',''))
+            show_followed = bool(request.cookies.get('show_followed', ''))
         if show_followed:
             query = current_user.followed_posts
         else:
             query = Post.query
         #rendering data on page
-        pagination = query.order_by(Post.timestamp.desc()).paginate(page,per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],error_out=False)
+        pagination = query.order_by(Post.timestamp.desc()).paginate(page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],error_out=False)
         posts = pagination.items
         return render_template('index.html', form=form, posts=posts, show_followed=show_followed, pagination=pagination)
 
@@ -49,16 +49,16 @@ def register():
 
         form = RegistrationForm()
         if form.validate_on_submit():
-          user = User(email=form.email.data,
-                    username=form.userName.data,
-                    password=form.password.data
+            user = User(email=form.email.data,
+                        username=form.userName.data,
+                        password=form.password.data
                         )
-          db.session.add(user)
-          db.session.commit()#had to added for none delay
-          token = user.generate_confirmation_token()
-          send_email(user.email, 'Confirmed Your Account', 'confirm', user=user, token=token)
-          flash('A confirmation has been sent to you by email.')
-          return redirect(url_for('home'))
+            db.session.add(user)
+            db.session.commit()  # had to added for none delay
+            token = user.generate_confirmation_token()
+            send_email(user.email, 'Confirmed Your Account', 'confirm', user=user, token=token)
+            flash('A confirmation has been sent to you by email.')
+            return redirect(url_for('home'))
         return render_template('register.html', form=form)
 
 
@@ -145,16 +145,16 @@ def edit_profile_admin(id):
     return render_template('editProfile.html', form=form, user=user)
 
 
-@app.route('/post/<int:id>', methods=['GET','POST'])
+@app.route('/post/<int:id>', methods=['GET', 'POST'])
 def post(id):
     post = Post.query.get_or_404(id)
     form = CommentForm()
     if form.validate_on_submit():
-        comment = Comment(body=form.body.data,post=post,author=current_user._get_current_object())
+        comment = Comment(body=form.body.data, post=post, author=current_user._get_current_object())
         db.session.add(comment)
         flash('Your comment has been published')
-        return redirect(url_for('post',id = post.id, page=-1))
-    page = request.args.get('page',1,type=int)
+        return redirect(url_for('post', id=post.id, page=-1))
+    page = request.args.get('page', 1, type=int)
     if page == -1:
         page = (post.comments.count()-1)/current_app.config['FLASKY_COMMENTS_PER_PAGE'] + 1
     pagination = post.comments.order_by(Comment.timestamp.asc()).paginate(page,per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'],error_out=False)
@@ -235,7 +235,6 @@ def followed_by(username):
     return render_template('followers.html', user=user, title='People You follow ', endpoint='followed_by', pagination=pagination, follows=follows)
 
 
-
 @app.route('/all')
 @login_required
 def show_all():
@@ -250,6 +249,7 @@ def show_followed():
     resp = make_response(redirect(url_for('home')))
     resp.set_cookie('show_followed','1', max_age=30*24*60*60)
     return resp
+
 
 @app.route('/confirm')
 @login_required
@@ -269,4 +269,4 @@ def logout():
 
 
 if __name__ == '__main__':
-    app.run(debug=True,port=5559)
+    app.run(debug=True, port=5529)

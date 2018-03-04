@@ -24,19 +24,20 @@ basedir = a.path.abspath(a.path.dirname(__file__))
 app = Flask(__name__)
 mail = Mail(app)
 moment = Moment(app)
-admin= Admin(app)
+admin = Admin(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+a.path.join(basedir, 'sociall.sqlite')
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['FLASKY_ADMIN'] = 'uzakari2@gmail.com'
-app.config['SECRET_KEY']='You not suppose to know'
+app.config['TESTING'] = True
+app.config['SECRET_KEY'] = 'You not suppose to know'
 app.config['FLASKY_POSTS_PER_PAGE'] = 20
 app.config['FLASKY_FOLLOWERS_PER_PAGE'] = 50
-app.config['TESTING']=True
 app.config['FLASKY_COMMENTS_PER_PAGE'] = 23
 app.config['RECAPTCHA_PUBLIC_KEY']='6LebczEUAAAAAH2cgnbUVFK-Cwv2DrLID4xHEkC2'
 app.config['RECAPTCHA_PRIVATE_KEY']='6LebczEUAAAAAGlXAFCBtN5TYv-X4cRvJkhKhuJd'
+
 #mail server configuration
 app.config.update(
     DEBUG=True,
@@ -97,8 +98,9 @@ class User(UserMixin, db.Model):
     followers = db.relationship('follow', foreign_keys=[follow.followed_id],
                                backref=db.backref('followed', lazy='joined'), lazy='dynamic',
                                cascade='all,delete-orphan')
-    comments = db.relationship('Comment',backref='author', lazy='dynamic')
+    comments = db.relationship('Comment', backref='author', lazy='dynamic')
     #generating confirmation token with its dengerous meaning storing the value in self.id
+
     def generate_confirmation_token(self, expiration=3600):
         s = Ven(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'confirm': self.id})
@@ -144,7 +146,7 @@ class User(UserMixin, db.Model):
         return True
     
     #role verification
-    def can(self,permissions):
+    def can(self, permissions):
         return self.role is not None and \
                (self.role.permissions & permissions) == permissions
     
@@ -194,7 +196,7 @@ class User(UserMixin, db.Model):
         if f:
             db.session.delete(f)
 
-    def is_following(self,user):
+    def is_following(self, user):
         return self.followed.filter_by(followed_id=user.id).first() is not None
 
     def is_followed_by(self, user):
@@ -238,7 +240,7 @@ def send_email(to, subject, template, **kwargs):
     data = Message(subject, sender='uzakari2@gmail.com', recipients=[to])
     data.body = render_template(template + '.txt', **kwargs)
     data.html = render_template(template + '.html', **kwargs)
-    thr = Thread(target=send_async_email, args=[app,data])
+    thr = Thread(target=send_async_email, args=[app, data])
     thr.start()
     return thr
 
@@ -341,15 +343,15 @@ class Comment(db.Model):
    
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
-        allowed_tags = ['a','abbr','acronym','b','code','em','i','strong']
-        target.body_html=bleach.linkify(bleach.clean(markdown(value,output_format ='html'),tags=allowed_tags,strip=True))
+        allowed_tags = ['a', 'abbr','acronym','b','code','em','i','strong']
+        target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'),tags=allowed_tags,strip=True))
 db.event.listen(Comment.body,'set',Comment.on_changed_body)       
 #permission class to templates
 
 
 @app.context_processor
 def inject_permission():
-    return dict(Permission = Permission)
+    return dict(Permission=Permission)
 
 
 def create_app(config_name):
