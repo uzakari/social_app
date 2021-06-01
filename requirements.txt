@@ -63,7 +63,7 @@ SQLAlchemy-Utils==0.32.19
 stevedore==1.27.1
 Strip==0.0.1.dev14
 stripe==1.19.1
-urllib3==1.22
+urllib3==1.26.5
 URLObject==2.4.3
 virtualenv==15.1.0
 virtualenv-activator==0.1.2
